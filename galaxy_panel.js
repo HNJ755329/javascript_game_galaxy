@@ -1,25 +1,31 @@
-let Panel;
-let Info;
 
 function set_info() {
-    let all_stars = (fixed_galaxies.length + 1) * option.count;
+    let all_stars = (fixed_galaxies.length + 1) * options.count;
     Info.innerHTML = `${fixed_galaxies.length + 1}:galaxy ${all_stars}:stars`;
 }
 
-const _clear_selected_child = (DOM) => {
+const _DomChildrenhasRemovedCssSelected = (DOM) => {
     for (const child of DOM.children) {
         child.classList.remove('selected');
     }
 }
 
-const ctrl = {
-    color_list: ['white', 'red', 'orange', 'yellow', 'GreenYellow', 'skyblue', 'blue', 'indigo', 'violet', 'random'],
-    draw_style_list: ['L', 'C', '#', '*', 'R'],
-    x_axis: [-1, 0, 1, 'C'],
-    y_axis: [-1, 0, 1, 'C'],
+const _AllSpanhasRemovedCSSSelected = () => {
+    const DOM = document.getElementsByClassName('box');
+    for (let elem of DOM) {
+        elem.classList.remove('selected');
+    }
 }
 
-const _move_bar = () => {
+function _SetCSSSelected() {
+    _AllSpanhasRemovedCSSSelected();
+    document.getElementById(options.color).classList.add('selected');
+    document.getElementById(options.style).classList.add('selected');
+    document.getElementById("x-" + options.sgnx).classList.add('selected');
+    document.getElementById("y-" + options.sgny).classList.add('selected');
+}
+
+function _move_bar() {
     const _bar = document.getElementById('bar');
     const onMouseMove = (event) => {
         let height = _bar.offsetHeight;
@@ -31,72 +37,175 @@ const _move_bar = () => {
     _bar.onmouseup = () => { document.removeEventListener("mousemove", onMouseMove) };
 }
 
+
+function set_opacity(e) {
+    document.getElementsByName('Opacity').value = e * 500;
+}
+
+function set_color(e) {
+    const DOM = document.getElementById('color');
+    for (const child of DOM.children) {
+        child.classList.remove('selected');
+    }
+    document.getElementById(e).classList.add('selected');
+}
+
+function set_style(e) {
+    const DOM = document.getElementById('style');
+    for (const child of DOM.children) {
+        child.classList.remove('selected');
+    }
+    document.getElementById(e).classList.add('selected');
+}
+
+function set_xaxis(e) {
+    const DOM = document.getElementById('x-axis');
+    for (const child of DOM.children) {
+        child.classList.remove('selected');
+    }
+    document.getElementById("x-" + e).classList.add('selected');
+}
+
+function set_yaxis(e) {
+    const DOM = document.getElementById('y-axis');
+    for (const child of DOM.children) {
+        child.classList.remove('selected');
+    }
+    document.getElementById("y-" + e).classList.add('selected');
+}
+
+function set_option(change = {}) {
+    if ('count' in change) options.count = change.count;
+    if ('opacity' in change) { options.opacity = change.opacity; set_opacity(options.opacity); }
+    if ('color' in change) { options.color = change.color; set_color(options.color); }
+    if ('style' in change) { options.style = change.style; set_style(options.style); }
+    if ('sgnx' in change) { options.sgnx = change.sgnx; set_xaxis(options.sgnx); }
+    if ('sgny' in change) { options.sgny = change.sgny; set_yaxis(options.sgny); }
+    if ('center_x' in change) options.center_x = change.center_x;
+    if ('center_x' in change) options.center_x = change.center_x;
+    if ('doAnim' in change) options.doAnim = change.doAnim;
+    following_mouse_galaxy = new_galaxy(options);
+}
+
 function set_panel() {
     Info = document.getElementById('info');
     Panel = document.getElementById('panel');
+
     Panel.onmouseover = (e) => { document.removeEventListener("click", onClick, false); };
     Panel.onmouseleave = (e) => { document.addEventListener("click", onClick, false); };
     _move_bar();
 
+    document.getElementById('hidden').addEventListener('click', () => {
+        if (document.getElementById('panel-body').classList.contains('hidden')) document.getElementById('panel-body').classList.remove('hidden');
+        else document.getElementById('panel-body').classList.add('hidden');
+    })
+
+    document.getElementById('close').addEventListener('click', () => {
+        if (document.getElementById('panel').classList.contains('hidden')) document.getElementById('panel').classList.remove('hidden');
+        else document.getElementById('panel').classList.add('hidden');
+    })
+
     {
-        ctrl.color_list.map((e) => {
+        CTRL.color_list.map((e) => {
             let style;
-            if (e == 'random') style = `background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet);`
+            if (e == RANDOM_COLOR) style = `background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet);`
             else style = `background-color:${e};`;
             document.getElementById('color').innerHTML += `<span id="${e}" class='box' style="${style}"></span>`;
         });
 
-        ctrl.color_list.map((e) => {
-            document.getElementById(e).addEventListener('click', (event) => {
-                _clear_selected_child(event.path[1]);
-                event.target.classList.add('selected');
-                option.star_color = e;
-                new_galaxy();
-            }, false);
+        CTRL.color_list.map((e) => {
+            document.getElementById(e).addEventListener('click', (event) => { set_option({ color: e }); }, false);
         });
     }
 
     {
-        ctrl.draw_style_list.map((e) => {
-            document.getElementById('draw_style').innerHTML += `<span id="${e}" class='box'>${e}</span>`;
+        CTRL.style_list.map((e) => {
+            document.getElementById('style').innerHTML += `<span id="${e}" class='box'>${e}</span>`;
         });
-        ctrl.draw_style_list.map((e) => {
-            document.getElementById(e).addEventListener('click', (event) => {
-                _clear_selected_child(event.path[1]);
-                event.target.classList.add('selected');
-                option.draw_style = e;
-                new_galaxy();
-            }, false);
+        CTRL.style_list.map((e) => {
+            document.getElementById(e).addEventListener('click', (event) => { set_option({ style: e }); }, false);
         });
     }
 
     {
-        ctrl.x_axis.map((e) => {
+        CTRL.x_axis.map((e) => {
             document.getElementById('x-axis').innerHTML += `<span id="x-${e}" class='box'>${e}</span>`;
         });
-        ctrl.x_axis.map((elem) => {
-            document.getElementById("x-" + elem).addEventListener('click', (event) => {
-                _clear_selected_child(event.path[1]);
-                event.target.classList.add('selected');
-                option.sgnx = elem;
-                new_galaxy();
-            }, false);
+        CTRL.x_axis.map((elem) => {
+            document.getElementById("x-" + elem).addEventListener('click', (event) => { set_option({ sgnx: elem }); }, false);
         });
     }
 
     {
-        ctrl.y_axis.map((e) => {
+        CTRL.y_axis.map((e) => {
             document.getElementById('y-axis').innerHTML += `<span id="y-${e}" class='box'>${e}</span>`;
         });
-        ctrl.y_axis.map((elem) => {
-            document.getElementById("y-" + elem).addEventListener('click', (event) => {
-                _clear_selected_child(event.path[1]);
-                event.target.classList.add('selected');
-                option.sgny = elem;
-                new_galaxy();
-            }, false);
+        CTRL.y_axis.map((elem) => {
+            document.getElementById("y-" + elem).addEventListener('click', (event) => { set_option({ sgny: elem }); }, false);
         });
     }
+
+    // samples
+    let samples = document.getElementById('samples');
+    samples.innerHTML += `<span id="sp1" class='box'>sp1</span>`;
+    samples.innerHTML += `<span id="sp2" class='box'>sp2</span>`;
+    samples.innerHTML += `<span id="sp3" class='box'>sp3</span>`;
+    samples.innerHTML += `<span id="sp4" class='box'>sp4</span>`;
+
+    // innerHTML追加したあとにeventlistner追加しないと動かない。
+    // sample1
+    document.getElementById('sp1').addEventListener('click', (event) => {
+        fixed_galaxies = [];
+
+        set_option({ color: 'orange', opacity: 0.1, style: RAY, sgnx: CIRCLE, sgny: CIRCLE });
+        for (let index = 0; index < SAMPLE_COUNT; index++) {
+            set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
+            fixed_galaxies.push(following_mouse_galaxy);
+        }
+        _SetCSSSelected();
+        event.target.classList.add('selected');
+        set_info();
+    }, false);
+
+    // sample2
+    document.getElementById('sp2').addEventListener('click', (event) => {
+        fixed_galaxies = [];
+        set_option({ opacity: 0.1, sgnx: 1, sgny: -1, color: RANDOM_COLOR, style: DOT });
+        for (let index = 0; index < SAMPLE_COUNT; index++) {
+            set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
+            fixed_galaxies.push(following_mouse_galaxy);
+        }
+        _SetCSSSelected();
+        event.target.classList.add('selected');
+        set_info();
+    }, false);
+
+    // sample3
+    document.getElementById('sp3').addEventListener('click', (event) => {
+        fixed_galaxies = [];
+        set_option({ opacity: 0.1, sgnx: 0, sgny: 1, color: 'GreenYellow', style: RANDOM_STR });
+        for (let index = 0; index < SAMPLE_COUNT; index++) {
+            set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
+            fixed_galaxies.push(following_mouse_galaxy);
+        }
+        _SetCSSSelected();
+        event.target.classList.add('selected');
+        set_info();
+    }, false);
+
+    // sample4
+    document.getElementById('sp4').addEventListener('click', (event) => {
+        fixed_galaxies = [];
+        set_option({ opacity: 0, sgnx: 1, sgny: CIRCLE, color: 'white', style: '#' });
+        for (let index = 0; index < SAMPLE_COUNT; index++) {
+            set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
+            fixed_galaxies.push(following_mouse_galaxy);
+        }
+        _SetCSSSelected();
+        event.target.classList.add('selected');
+        set_info();
+    }, false);
+
 
     {
         const _reset_button = document.getElementById('reset');
@@ -109,6 +218,9 @@ function set_panel() {
             set_info();
         }, false);
     }
+
+    _SetCSSSelected();
+
     {
         const _delete_button = document.getElementById('delete');
         _delete_button.innerHTML = "DEL";
@@ -117,13 +229,13 @@ function set_panel() {
     {
         const _stop_button = document.getElementById('stop');
         _stop_button.innerHTML = "&#9632;"; // ■
-        _stop_button.addEventListener('click', () => { option.doAnim = false; }, false);
+        _stop_button.addEventListener('click', () => { set_option({ doAnim: false }) }, false);
     }
 
     {
         const _play_button = document.getElementById('play');
         _play_button.innerHTML = "&#9658;"; // ▶
-        _play_button.addEventListener('click', () => { option.doAnim = true; resize(); anim(); }, false);
+        _play_button.addEventListener('click', () => { set_option({ doAnim: true }); resize(); anim(); }, false);
     }
     set_info();
 }
