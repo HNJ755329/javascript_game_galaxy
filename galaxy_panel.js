@@ -10,21 +10,6 @@ const _DomChildrenhasRemovedCssSelected = (DOM) => {
     }
 }
 
-const _AllSpanhasRemovedCSSSelected = () => {
-    const DOM = document.getElementsByClassName('box');
-    for (let elem of DOM) {
-        elem.classList.remove('selected');
-    }
-}
-
-function _SetCSSSelected() {
-    _AllSpanhasRemovedCSSSelected();
-    document.getElementById(options.color).classList.add('selected');
-    document.getElementById(options.style).classList.add('selected');
-    document.getElementById("x-" + options.sgnx).classList.add('selected');
-    document.getElementById("y-" + options.sgny).classList.add('selected');
-}
-
 function _move_bar() {
     const _bar = document.getElementById('bar');
     const onMouseMove = (event) => {
@@ -39,39 +24,37 @@ function _move_bar() {
 
 
 function set_opacity(e) {
-    document.getElementsByName('Opacity').value = e * 500;
+    document.getElementById('Opacity').value = e * MaxOpacity;
 }
 
 function set_color(e) {
     const DOM = document.getElementById('color');
-    for (const child of DOM.children) {
-        child.classList.remove('selected');
-    }
+    _DomChildrenhasRemovedCssSelected(DOM);
     document.getElementById(e).classList.add('selected');
 }
 
 function set_style(e) {
     const DOM = document.getElementById('style');
-    for (const child of DOM.children) {
-        child.classList.remove('selected');
-    }
+    _DomChildrenhasRemovedCssSelected(DOM);
     document.getElementById(e).classList.add('selected');
 }
 
 function set_xaxis(e) {
     const DOM = document.getElementById('x-axis');
-    for (const child of DOM.children) {
-        child.classList.remove('selected');
-    }
+    _DomChildrenhasRemovedCssSelected(DOM);
     document.getElementById("x-" + e).classList.add('selected');
 }
 
 function set_yaxis(e) {
     const DOM = document.getElementById('y-axis');
-    for (const child of DOM.children) {
-        child.classList.remove('selected');
-    }
+    _DomChildrenhasRemovedCssSelected(DOM);
     document.getElementById("y-" + e).classList.add('selected');
+}
+
+function set_sample(e) {
+    const DOM = document.getElementById('samples');
+    _DomChildrenhasRemovedCssSelected(DOM);
+    document.getElementById(e).classList.add('selected');
 }
 
 function set_option(change = {}) {
@@ -81,13 +64,23 @@ function set_option(change = {}) {
     if ('style' in change) { options.style = change.style; set_style(options.style); }
     if ('sgnx' in change) { options.sgnx = change.sgnx; set_xaxis(options.sgnx); }
     if ('sgny' in change) { options.sgny = change.sgny; set_yaxis(options.sgny); }
+    if ('sample' in change) { options.sample = change.sample; set_sample(options.sample); }
     if ('center_x' in change) options.center_x = change.center_x;
     if ('center_x' in change) options.center_x = change.center_x;
     if ('doAnim' in change) options.doAnim = change.doAnim;
-    following_mouse_galaxy = new_galaxy(options);
+    if (options.doAnim) following_mouse_galaxy = new_galaxy(options);
+}
+
+function reset() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = BLACK_BACKGROUND;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    fixed_galaxies = [];
+    set_info();
 }
 
 function set_panel() {
+
     Info = document.getElementById('info');
     Panel = document.getElementById('panel');
 
@@ -145,64 +138,54 @@ function set_panel() {
         });
     }
 
-    // samples
-    let samples = document.getElementById('samples');
-    samples.innerHTML += `<span id="sp1" class='box'>sp1</span>`;
-    samples.innerHTML += `<span id="sp2" class='box'>sp2</span>`;
-    samples.innerHTML += `<span id="sp3" class='box'>sp3</span>`;
-    samples.innerHTML += `<span id="sp4" class='box'>sp4</span>`;
 
+    {
+        CTRL.sapmles.map((e) => {
+            document.getElementById('samples').innerHTML += `<span id="${e}" class='box'>${e}</span>`;
+        });
+    }
     // innerHTML追加したあとにeventlistner追加しないと動かない。
     // sample1
-    document.getElementById('sp1').addEventListener('click', (event) => {
-        fixed_galaxies = [];
-
-        set_option({ color: 'orange', opacity: 0.1, style: RAY, sgnx: CIRCLE, sgny: CIRCLE });
+    document.getElementById(CTRL.sapmles[0]).addEventListener('click', (event) => {
+        reset();
+        set_option({ color: 'skyblue', opacity: 1, style: DOT, sgnx: CIRCLE, sgny: -1, sample: CTRL.sapmles[0] });
         for (let index = 0; index < SAMPLE_COUNT; index++) {
             set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
             fixed_galaxies.push(following_mouse_galaxy);
         }
-        _SetCSSSelected();
-        event.target.classList.add('selected');
         set_info();
     }, false);
 
     // sample2
-    document.getElementById('sp2').addEventListener('click', (event) => {
-        fixed_galaxies = [];
-        set_option({ opacity: 0.1, sgnx: 1, sgny: -1, color: RANDOM_COLOR, style: DOT });
+    document.getElementById(CTRL.sapmles[1]).addEventListener('click', (event) => {
+        reset();
+        set_option({ opacity: 0.2, sgnx: 1, sgny: -1, color: RANDOM_COLOR, style: DOT, sample: CTRL.sapmles[1] });
         for (let index = 0; index < SAMPLE_COUNT; index++) {
             set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
             fixed_galaxies.push(following_mouse_galaxy);
         }
-        _SetCSSSelected();
-        event.target.classList.add('selected');
         set_info();
     }, false);
 
     // sample3
-    document.getElementById('sp3').addEventListener('click', (event) => {
-        fixed_galaxies = [];
-        set_option({ opacity: 0.1, sgnx: 0, sgny: 1, color: 'GreenYellow', style: RANDOM_STR });
+    document.getElementById(CTRL.sapmles[2]).addEventListener('click', (event) => {
+        reset();
+        set_option({ opacity: 0.1, sgnx: 0, sgny: 1, color: 'GreenYellow', style: RANDOM_STR, sample: CTRL.sapmles[2] });
         for (let index = 0; index < SAMPLE_COUNT; index++) {
             set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
             fixed_galaxies.push(following_mouse_galaxy);
         }
-        _SetCSSSelected();
-        event.target.classList.add('selected');
         set_info();
     }, false);
 
     // sample4
-    document.getElementById('sp4').addEventListener('click', (event) => {
-        fixed_galaxies = [];
-        set_option({ opacity: 0, sgnx: 1, sgny: CIRCLE, color: 'white', style: '#' });
+    document.getElementById(CTRL.sapmles[3]).addEventListener('click', (event) => {
+        reset();
+        set_option({ opacity: 0, sgnx: 1, sgny: CIRCLE, color: 'white', style: AA, sample: CTRL.sapmles[3] });
         for (let index = 0; index < SAMPLE_COUNT; index++) {
             set_option({ center_x: RANDOM_X(), center_y: RANDOM_Y() });
             fixed_galaxies.push(following_mouse_galaxy);
         }
-        _SetCSSSelected();
-        event.target.classList.add('selected');
         set_info();
     }, false);
 
@@ -210,16 +193,8 @@ function set_panel() {
     {
         const _reset_button = document.getElementById('reset');
         _reset_button.innerHTML = "CLEAR";
-        _reset_button.addEventListener('click', () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillStyle = `rgba(0,0,0,1)`;
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            fixed_galaxies = [];
-            set_info();
-        }, false);
+        _reset_button.addEventListener('click', () => { reset(); }, false);
     }
-
-    _SetCSSSelected();
 
     {
         const _delete_button = document.getElementById('delete');
@@ -237,5 +212,4 @@ function set_panel() {
         _play_button.innerHTML = "&#9658;"; // ▶
         _play_button.addEventListener('click', () => { set_option({ doAnim: true }); resize(); anim(); }, false);
     }
-    set_info();
 }

@@ -49,9 +49,12 @@ function onClick(e) {
 window.onload = function () {
     canvas = document.getElementById('canvas');
     context = canvas.getContext('2d');
+    set_panel();
+    set_option({ count: 13, opacity: 0.1, color: RANDOM_COLOR, style: RAY, sgnx: CIRCLE, sgny: CIRCLE, center_x: mouse_pos.x, center_y: mouse_pos.y, doAnim: true });
+    set_info();
+
     resize();
     anim();
-    set_panel();
     document.addEventListener("click", onClick, false);
 }
 
@@ -67,7 +70,7 @@ function resize() {
 
 function anim() {
     if (!options.doAnim) { context = null; return; }
-    context = canvas.getContext('2d');
+    else context = canvas.getContext('2d');
     window.requestAnimationFrame(anim);
     context.fillStyle = `rgba(0,0,0,${options.opacity})`;
     context.fillRect(0, 0, canvas.width, canvas.height);
