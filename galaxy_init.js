@@ -14,7 +14,7 @@ const RANDOM_COLOR = 'RandomColor';
 const RANDOM_STR = 'Ran';
 const RAY = 'Ray';
 const DOT = 'Dot';
-const AA = '#';
+const AA = '$$';
 const CIRCLE = 'Cir';
 const SAMPLE_COUNT = 10; //サンプル生成する際の個数
 

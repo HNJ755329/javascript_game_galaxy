@@ -4,7 +4,7 @@ function set_info() {
     Info.innerHTML = `${fixed_galaxies.length + 1}:galaxy ${all_stars}:stars`;
 }
 
-const _DomChildrenhasRemovedCssSelected = (DOM) => {
+function _DomChildrenhasRemovedCssSelected(DOM) {
     for (const child of DOM.children) {
         child.classList.remove('selected');
     }
@@ -21,7 +21,6 @@ function _move_bar() {
     _bar.onmousedown = () => { document.addEventListener("mousemove", onMouseMove) };
     _bar.onmouseup = () => { document.removeEventListener("mousemove", onMouseMove) };
 }
-
 
 function set_opacity(e) {
     document.getElementById('Opacity').value = e * MaxOpacity;
@@ -66,12 +65,13 @@ function set_option(change = {}) {
     if ('sgny' in change) { options.sgny = change.sgny; set_yaxis(options.sgny); }
     if ('sample' in change) { options.sample = change.sample; set_sample(options.sample); }
     if ('center_x' in change) options.center_x = change.center_x;
-    if ('center_x' in change) options.center_x = change.center_x;
+    if ('center_y' in change) options.center_y = change.center_y;
     if ('doAnim' in change) options.doAnim = change.doAnim;
-    if (options.doAnim) following_mouse_galaxy = new_galaxy(options);
+    following_mouse_galaxy = new_galaxy(options);
 }
 
 function reset() {
+    if (!options.doAnim) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = BLACK_BACKGROUND;
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -113,7 +113,7 @@ function set_panel() {
 
     {
         CTRL.style_list.map((e) => {
-            document.getElementById('style').innerHTML += `<span id="${e}" class='box'>${e}</span>`;
+            document.getElementById('style').innerHTML += `<span id="${e}" class='box'>${e}</span> `;
         });
         CTRL.style_list.map((e) => {
             document.getElementById(e).addEventListener('click', (event) => { set_option({ style: e }); }, false);
@@ -122,7 +122,7 @@ function set_panel() {
 
     {
         CTRL.x_axis.map((e) => {
-            document.getElementById('x-axis').innerHTML += `<span id="x-${e}" class='box'>${e}</span>`;
+            document.getElementById('x-axis').innerHTML += `<span id="x-${e}" class='box'>${e}</span> `;
         });
         CTRL.x_axis.map((elem) => {
             document.getElementById("x-" + elem).addEventListener('click', (event) => { set_option({ sgnx: elem }); }, false);
@@ -131,7 +131,7 @@ function set_panel() {
 
     {
         CTRL.y_axis.map((e) => {
-            document.getElementById('y-axis').innerHTML += `<span id="y-${e}" class='box'>${e}</span>`;
+            document.getElementById('y-axis').innerHTML += `<span id="y-${e}" class='box'>${e}</span> `;
         });
         CTRL.y_axis.map((elem) => {
             document.getElementById("y-" + elem).addEventListener('click', (event) => { set_option({ sgny: elem }); }, false);
@@ -141,10 +141,10 @@ function set_panel() {
 
     {
         CTRL.sapmles.map((e) => {
-            document.getElementById('samples').innerHTML += `<span id="${e}" class='box'>${e}</span>`;
+            document.getElementById('samples').innerHTML += `<span id="${e}" class='box'>${e}</span> `;
         });
     }
-    // innerHTML追加したあとにeventlistner追加しないと動かない。
+    // innerHTML追加したあとにaddeventlistnerしないと動かない。
     // sample1
     document.getElementById(CTRL.sapmles[0]).addEventListener('click', (event) => {
         reset();
@@ -192,13 +192,13 @@ function set_panel() {
 
     {
         const _reset_button = document.getElementById('reset');
-        _reset_button.innerHTML = "CLEAR";
+        _reset_button.innerHTML = "Clr";
         _reset_button.addEventListener('click', () => { reset(); }, false);
     }
 
     {
         const _delete_button = document.getElementById('delete');
-        _delete_button.innerHTML = "DEL";
+        _delete_button.innerHTML = "Del";
         _delete_button.addEventListener('click', () => { fixed_galaxies.shift(); set_info(); }, false);
     }
     {

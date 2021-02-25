@@ -49,7 +49,12 @@ function onClick(e) {
 window.onload = function () {
     canvas = document.getElementById('canvas');
     context = canvas.getContext('2d');
+    context.fillStyle = BLACK_BACKGROUND;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
     set_panel();
+    // optionの初期値設定
+    // set_panelでHTMLが読み込まれた後に行う。
     set_option({ count: 13, opacity: 0.1, color: RANDOM_COLOR, style: RAY, sgnx: CIRCLE, sgny: CIRCLE, center_x: mouse_pos.x, center_y: mouse_pos.y, doAnim: true });
     set_info();
 
@@ -72,8 +77,15 @@ function anim() {
     if (!options.doAnim) { context = null; return; }
     else context = canvas.getContext('2d');
     window.requestAnimationFrame(anim);
-    context.fillStyle = `rgba(0,0,0,${options.opacity})`;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    // options.opacity = 0のときに再描画すると
+    // 真っ白な画面が描写されるのでopacityが0にならないように分岐する。
+    if (options.opacity) {
+        context.fillStyle = `rgba(0,0,0,${options.opacity})`;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    } else {
+        context.fillStyle = `rgba(0,0,0,0.01)`;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+    }
     following_mouse_galaxy.following_mouse_draw(mouse_pos.x, mouse_pos.y);
     fixed_galaxies.map(gal => gal.fixed_draw());
 }

@@ -1,67 +1,7 @@
 <html>
 
 <head>
-    <style>
-        #canvas {
-            position: fixed;
-            z-index: -1;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #info {
-            color: black;
-        }
-
-        #panel {
-            width: 200px;
-            background-color: whitesmoke;
-            position: absolute;
-            border-radius: 3px 3px 3px 3px;
-        }
-
-        #panel-body {
-            margin: 10px;
-        }
-
-        .box {
-            margin: 0px;
-            padding: 0px;
-            width: 36px;
-            height: 36px;
-            border: 1px solid black;
-            display: inline-block;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        #btns {
-            margin-top: 10px;
-        }
-
-        .bar {
-            margin: 0;
-            width: 100%;
-            height: 36px;
-            background-color: skyblue;
-            text-align: right;
-        }
-
-        .input {
-            margin-top: 10px;
-        }
-
-        .selected {
-            border: 2px solid red;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 </head>
@@ -99,10 +39,10 @@
 
             <div id="btns">
                 <div>Actions</div>
-                <button id="stop" class="btn btn-primary"></button>
-                <button id="play" class="btn btn-primary"></button>
-                <button id="delete" class="btn btn-warning"></button>
-                <button id="reset" class="btn btn-danger"></button>
+                <button id="stop" class="box"></button>
+                <button id="play" class="box"></button>
+                <button id="delete" class="box btn-warning"></button>
+                <button id="reset" class="box btn-danger"></button>
             </div>
         </div>
     </div>
